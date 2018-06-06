@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link type="text/css" href="materialize/css/materialize.css" rel="stylesheet">
+	<link type="text/css" href="style.css" rel="stylesheet">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+</head>
+
+<body>
+	<div id="title">
+		<h1 class="blue-text">ХАРЫСХАЛ</h1>
+		<h5 class="blue-text">Благотворительный фонд</h5>
+	</div>
+	<div id="regisPage">
+		<div class="row">
+			<form class="col s12">
+				<div class="row">
+					<div class="input-field col s12">
+						<input id="password" type="password" class="validate">
+						<label for="password">Пароль</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12">
+						<input id="login" type="text" class="validate">
+						<label>Логин</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12">
+						<input id="email" type="email" class="validate">
+						<label for="email">Электронная почта</label>
+					</div>
+				</div>
+			</form>
+			<a class="waves-effect waves-light btn card-panel blue" id="sign_in_btn">У меня уже есть аккаунт</a>
+			<a class="waves-effect waves-light btn card-panel blue" id="registrate_btn">Зарегистрироваться</a>
+		</div>
+	</div>
+	<div id="signinPage">
+		<div class="row">
+			<form class="col s12">
+				<div class="row">
+					<div class="input-field col s12">
+						<input id="password1" type="password" class="validate">
+						<label>Пароль</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="input-field col s12">
+						<input id="log_in" type="email" class="validate">
+						<label>Логин</label>
+					</div>
+				</div>
+			</form>
+			<a class="waves-effect waves-light btn card-panel blue" id="back_btn">Назад</a>
+			<a class="waves-effect waves-light btn card-panel blue" id="sign_in_btn1">Войти</a>
+		</div>
+
+	</div>
+	<div id="role_div">
+		<a class="waves-effect waves-light btn card-panel blue" id="volouteer" href="client_form.html">Я Нуждаюсь в помощи</a>
+		<a class="waves-effect waves-light btn card-panel blue" id="client" href="volounteer_form.html">Я  Волонтер</a>
+	</div>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="materialize/js/materialize.js"></script>
+	<script>
+		$(document).ready(function() {
+			if (localStorage.hasOwnProperty("user_id")) {
+						
+									$.ajax({
+										url: "http://127.0.0.1:8000/success",
+										data: {
+											id:localStorage.user_id,
+										},
+										success: function(arg) {
+											if (arg[0].status == 1) {
+												location.replace("main_volunteer.html");
+											} else {
+												location.replace("main_client.html");
+											}
+										}
+									})
+								
+							
+					
+					}
+				
+			 else {
+				$("#regisPage").show();
+			}
+		});
+		
+		$("#sign_in_btn1").on('click', function() {
+			$.ajax({
+				url: "http://127.0.0.1:8000/sign_in",
+				data: {
+					login: $("#log_in").val(),
+					password: $("#password1").val(),
+				},
+				success: function(arg) {
+					console.log(arg[0].user_id);
+					if (arg.length == 0) {
+						alert("Неверный пароль или логин");
+					} else {
+						$.ajax({
+							url: "http://127.0.0.1:8000/success",
+							data: {
+								id: arg[0].user_id,
+							},
+							success: function(arg) {
+								if (arg[0].status == 1) {
+									location.replace("main_volunteer.html");
+								} else {
+									location.replace("main_client.html");
+								}
+							}
+						})
+					}
+				}
+			});
+		});
+		$("#sign_in_btn").on('click', function() {
+			$("#signinPage").show();
+			$("#regisPage").hide();
+		});
+		$("#back_btn").on('click', function() {
+			$("#signinPage").hide();
+			$("#regisPage").show();
+		});
+
+		$("#registrate_btn").on('click', function() {
+			if ($("#password").val() == "" || $("#login").val() == "" || $("#email").val() == "") {
+				alert("Заполните все поля");
+			} else {
+				$("#title").hide();
+				$("#regisPage").hide();
+				$("#role_div").show();
+				$.ajax({
+					url: "http://127.0.0.1:8000/addUser",
+					data: {
+						login: $("#login").val(),
+						email: $("#email").val(),
+						password: $("#password").val(),
+					},
+					success: function(arg) {
+
+						localStorage.setItem("user_id", arg);
+
+					}
+				})
+			}
+
+		});
+
+	</script>
+</body>
+
+</html>

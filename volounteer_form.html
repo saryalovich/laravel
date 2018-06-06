@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link type="text/css" href="materialize/css/materialize.css" rel="stylesheet">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+</head>
+
+<body>
+	<div class="row">
+		<form class="col s12">
+			<div class="row">
+				<div class="input-field col s12">
+					<input placeholder="ФИО" id="name" type="text" class="validate">
+					<label for="first_name"></label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="input-field col s12">
+					<input id="pasport" type="text" class="validate" placeholder="Паспортные данные(серия, номер)">
+					<label for="last_name"></label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="input-field col s12">
+					<input placeholder="Контактный номер" id="phone" type="text" class="validate">
+					<label for="first_name"></label>
+				</div>
+			</div>
+		</form>
+	</div>
+	<a class="waves-effect waves-light btn card-panel blue" id="volouteer">Завершить анкету</a>
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script type="text/javascript" src="materialize/js/materialize.js"></script>
+	<script>
+		$("#volouteer").on('click', function() {
+			if ($("#pasport").val() == "" || $("#phone").val() == "" || $("#name").val() == "") {
+				alert("Заполните все поля");
+			} else {
+				$.ajax({
+					url: "http://127.0.0.1:8000/addUser_vol",
+					data: {
+						name: $("#name").val(),
+						phone: $("#phone").val(),
+						pasport: $("#pasport").val(),
+						user_id:localStorage.user_id,
+					},
+					success: function(arg) {
+						
+					}
+				});
+				location.replace("main.html");
+			}
+		})
+
+	</script>
+</body>
+
+</html>

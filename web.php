@@ -11,57 +11,57 @@
 |
 */
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-Route::get('/post/{n}', function ($n) {
-	$categ=App\Category::all();
-	$z=App\Post::find($n);
-    return view('post',["zapis"=>$z,"results"=>$categ]);
-});
+use Illuminate\Database\Eloquent\Collection;
 Route::get('/', function () {
-	$categ=App\Category::all();
-    return view('welcome',["results"=>$categ]);
+    return view('welcome');
 });
-Route::get('/posts/{num}', function ($num) {
-	$x=App\Post::where('category_id', $num)
-		->get();
-	$categ=App\Category::all();
-    return view('page',["catid"=>$num,"results"=>$categ,"posts"=>$x]);
-});
-Route::get('/test/{name}', function ($name) {
-    App\Category::create([
-		"name"=>$name
+//Route::get('/getUser',function(Request $req){
+//	App\
+//});
+Route::get('/addUser', function (Request $req) {
+	header('Access-Control-Allow-Origin:*');
+	$id=App\User::insertGetId([
+		"user_password"=>$req->password,
+		"user_login"=>$req->login,
+		"user_email"=>$req->email,
 	]);
+	return $id;
 });
-Route::post('/comment/{id}', function ($id, Request $req) {
-    App\Comment::create([
-		"body"=>$req->comment_body,
-		"post_id"=>$id
+Route::get('/addUser_vol',function(Request $req){
+	header('Access-Control-Allow-Origin:*');
+	App\Volunteer::create([
+		"fio"=>$req->name,
+		"pasport"=>$req->pasport,
+		"contact_phone"=>$req->phone,
+		"user_id"=>$req->user_id,
+		"status"=>1,
 	]);
-	return back();
+	return "djvn";
 });
-Route::get('/admin', function () {
-    return view('admin');
+Route::get('/addUser_client',function(Request $req){
+	header('Access-Control-Allow-Origin:*');
+	App\Client::create([
+		"fio_parent"=>$req->name_parent,
+		"fio_child"=>$req->name_child,
+		"diagnisis"=>$req->diagnosis,
+		"limitations"=>$req->limitations,
+		"user_id"=>$req->user_id,
+		"contact_phone"=>$req->phone,
+		"status"=>0,
+	]);
+	return "djvn";
 });
-Route::post('/addPost', function (Request $req) {
+Route::get('/sign_in',function(Request $req){
+	header('Access-Control-Allow-Origin:*');
+	$user=App\User::where('user_login',$req->login)->where('user_password',$req->password)->get();
+	return $user;
+});
+Route::get('/success',function(Request $req){
+	header('Access-Control-Allow-Origin:*');
+	$id_1=App\Client::where('user_id',$req->id)->get();
+	$id_2=App\Volunteer::where('user_id',$req->id)->get();
+	$res = new Collection();
+	$result = $res->merge($id_1)->merge($id_2);
+	return $result;
+});
 
-	$path=Storage::put('public',$req->file('img'));
-	$url=Storage::url($path);
-	App\Post::create([
-		"title"=>$req->title,
-		"body"=>$req->body,
-		"category_id"=>1,
-		"path"=>$url,
-			
-	]);
-	
-    
-});
-Route::get('/ajax', function (Request $req) {
-	header('Access-Control-Allow-Origin:*');
-	return App\Post::find($req->test);
-	
-});
-Route::get('/getALL', function () {
-	header('Access-Control-Allow-Origin:*');
-	return App\Item::all();
-});
